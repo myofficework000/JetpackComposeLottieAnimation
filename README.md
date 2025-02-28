@@ -1,5 +1,9 @@
 # Jetpack compose TextField Animation using Lottie
 
+
+https://github.com/user-attachments/assets/126ed584-1ecd-4bbe-bb79-0d93640a5ea1
+
+
 ## Features
 - **Eye-Catching Animation:** A cute character blinks when the text field is empty and watches the cursor as you type.
 - **Playful Privacy Feature:** When typing in a password field, the character covers its eyes for privacy.
