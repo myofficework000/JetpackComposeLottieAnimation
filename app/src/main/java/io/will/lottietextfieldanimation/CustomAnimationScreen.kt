@@ -1,26 +1,18 @@
 package io.will.lottietextfieldanimation
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.text.TextLayoutResult
@@ -31,12 +23,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCancellationBehavior
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.*
 
 @Composable
 fun CustomAnimationScreen(modifier: Modifier = Modifier) {
@@ -84,7 +71,6 @@ fun CustomAnimation(
     animationProgress: Float
 ) {
     Box {
-        // TODO: This is a placeholder to avoid the flashing when switching animations; It's still flashing when switching from/to password field tho.
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.coveringeyes))
         val progress by animateLottieCompositionAsState(
             composition,
@@ -112,7 +98,6 @@ fun BlinkingAnimation() {
         iterations = LottieConstants.IterateForever,
         cancellationBehavior = LottieCancellationBehavior.OnIterationFinish,
     )
-
     LottieAnimation(
         composition = composition,
         progress = { progress }
@@ -135,13 +120,11 @@ fun CoveringEyesAnimation() {
         composition,
         cancellationBehavior = LottieCancellationBehavior.OnIterationFinish,
     )
-
     LottieAnimation(
         composition = composition,
         progress = { progress }
     )
 }
-
 
 @Composable
 fun CustomTextField(
@@ -155,39 +138,43 @@ fun CustomTextField(
 ) {
     var cursorCoordinates by remember { mutableStateOf(Offset(0f, 0f)) }
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
+    var isFocused by remember { mutableStateOf(false) }
 
-    BasicTextField(
-        value = textState,
-        visualTransformation = visualTransformation,
-        keyboardOptions = keyboardOptions,
-        onValueChange = onTextChanged, onTextLayout = { result -> textLayoutResult = result },
-        textStyle = TextStyle(fontSize = 36.sp, color = Color.Black),
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .border(1.dp, Color.Black)
-            .padding(8.dp)
-            .onFocusChanged {
-                if (it.hasFocus) {
-                    onFocused()
-                }
-            }
-            .onGloballyPositioned { layoutCoordinates ->
-                // Get the position of the TextField in the root coordinate system
-                val position = layoutCoordinates.positionInRoot()
-
-                textLayoutResult?.let { layoutResult ->
-                    // Get the current cursor offset from the text state selection
-                    val cursorOffset = textState.selection.start
-
-                    // Retrieve the rectangle that represents the cursor's position
-                    val cursorRect = layoutResult.getCursorRect(cursorOffset)
-
-                    // Calculate the cursor's coordinates in the root coordinate system
-                    cursorCoordinates = Offset(cursorRect.left + position.x, cursorRect.top + position.y)
-
-                    onCursorChanged?.invoke(cursorCoordinates.x, layoutResult.size.width)
-                }
-            }
+    val borderColor by animateColorAsState(
+        targetValue = if (isFocused) Color(0xFF32FFAA) else Color.Gray,
+        animationSpec = tween(durationMillis = 500)
     )
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(2.dp, borderColor, shape = RectangleShape)
+            .padding(8.dp)
+    ) {
+        BasicTextField(
+            value = textState,
+            visualTransformation = visualTransformation,
+            keyboardOptions = keyboardOptions,
+            onValueChange = onTextChanged,
+            textStyle = TextStyle(fontSize = 18.sp, color = Color.Black),
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .onFocusChanged {
+                    isFocused = it.hasFocus
+                    if (it.hasFocus) {
+                        onFocused()
+                    }
+                }
+                .onGloballyPositioned { layoutCoordinates ->
+                    val position = layoutCoordinates.positionInRoot()
+                    textLayoutResult?.let { layoutResult ->
+                        val cursorOffset = textState.selection.start
+                        val cursorRect = layoutResult.getCursorRect(cursorOffset)
+                        cursorCoordinates = Offset(cursorRect.left + position.x, cursorRect.top + position.y)
+                        onCursorChanged?.invoke(cursorCoordinates.x, layoutResult.size.width)
+                    }
+                }
+        )
+    }
 }
