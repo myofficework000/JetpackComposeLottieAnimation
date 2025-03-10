@@ -39,7 +39,7 @@ fun CustomAnimationScreen(modifier: Modifier = Modifier) {
             animationProgress = animationProgress
         )
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text("Text")
         CustomTextField(
