@@ -1,5 +1,9 @@
 # Jetpack compose TextField Animation using Lottie
 
+![Language](https://img.shields.io/github/languages/top/cortinico/kotlin-android-template?color=blue&logo=kotlin)
+![GitHub repo size](https://img.shields.io/github/repo-size/myofficework000/JetpackComposeLottieAnimation)  
+![GitHub stars](https://img.shields.io/github/stars/myofficework000/JetpackComposeLottieAnimation?style=social)  
+![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)
 
 https://github.com/user-attachments/assets/126ed584-1ecd-4bbe-bb79-0d93640a5ea1
 
